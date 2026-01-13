@@ -1,0 +1,8 @@
+{:imap {:user "must specify a user"
+        :password "*****"
+        :session {"mail.imaps.host" "must specify an imap server"
+                  "mail.imaps.port" 993}}
+ :after-processing {:mark-as-seen true
+                    :delete false}
+ :search {:from "noreply@kleinanzeigen.de"
+          :days 7}}
