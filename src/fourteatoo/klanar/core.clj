@@ -60,15 +60,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def ^:private cli-options
-  [["-c" "--config FILE" "Confirguration file"
+  [["-c" "--config FILE" "use confirguration file"
     :parse-fn #(io/file %)
     :validate [#(.exists %) "Configuration file does not exist"]]
-   ["-n" "--dry-run" "Don't actually renew ads"]
-   ["-l" "--list-folders" "List all folders on the server"]
-   ["-v" "--verbose" "Increase logging verbosity"
+   ["-n" "--dry-run" "don't actually renew ads"]
+   ["-l" "--list-folders" "list all folders on the server"]
+   ["-v" "--verbose" "increase logging verbosity"
     :default 0
     :update-fn inc]
-   ["-h" "--help" "Show program usage"]])
+   ["-h" "--help" "show program usage"]])
 
 (defn- usage [summary errors]
   (doseq [e errors]
