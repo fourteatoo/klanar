@@ -120,6 +120,7 @@
         (imap/list-folders imap/store)))
 
 (defn- handle-mailbox-event [e inbox]
+  (log/debug "mailbox event" e)
   (-> (imap/event-messages e)
       convert-messages
       filter-renewals
