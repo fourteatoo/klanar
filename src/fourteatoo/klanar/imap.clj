@@ -142,10 +142,10 @@
   (folder-set-flag folder messages Flags$Flag/DELETED))
 
 (defn messages-copy [in-folder messages out-folder]
-  (.copyMessages in-folder (into-array Message messages) out-folder))
+  (.copyMessages in-folder (into-array Message messages) (as-folder (folder-store in-folder) out-folder)))
 
 (defn messages-move [in-folder messages out-folder]
-  (.moveMessages in-folder (into-array Message messages) out-folder))
+  (.moveMessages in-folder (into-array Message messages) (as-folder (folder-store in-folder) out-folder)))
 
 (defn add-message-count-listener [folder & {:keys [added removed]
                                             :or {added identity
