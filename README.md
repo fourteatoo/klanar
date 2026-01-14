@@ -5,12 +5,12 @@
 
 # klanar
 
-Renew expiring ads on KleinAnzeige.de (the German online second-hand
-market place).
+klanar is an application that renews expiring ads on KleinAnzeige.de
+(the German online classified ads board; former eBay).
 
-It browse your email looking for expiration warnings.  Those are
-usually sent a week before the ad expires.  It identifies the
-extension link and clicks for you.
+It browses (or monitors) your email, looking for expiration warnings.
+Those are usually sent a week before the ad expires.  It identifies
+the renewal link and clicks it for you.
 
 ## Installation
 
@@ -20,22 +20,40 @@ Compile
 
 then copy the jar file somewhere you can find again
 
-    $ cp target/uberjar/klanar-<version>-standalone.jar some/where/else
+    $ cp target/uberjar/klanar-<version>-standalone.jar your/bin/directory/klanar.jar
+	
+then copy the shell script, which you can tailor to your needs:
+
+    $ cp klanar.sh your/bin/directory/klanar
+	
+By default the trampoline script runs the jar file of the same name,
+but with the `.jar` extension.
 
 ## Usage
 
-    $ java -jar target/uberjar/klanar-<version>-standalone.jar -h
-	
-will get you an usage string.  It should be straightforward.
-
-You need a configuration file before you can use the application.  The
+You need a configuration file before you can use the program.  The
 standard configuration file is `~/.klanar`, but you can specify
 another one withg the `-c` command line option.
 
-    $ java -jar target/klanar-<version>-standalone.jar
+Try
+
+    $ java -jar klanar-<version>-standalone.jar -h
 	
-it fetches you latest email and checks if there is any new message
-from kleinanzige.de, and processes them.  
+or, if you have installed the trampoline script:
+
+    $ klanar -h
+
+You will be provided with a list of acceptable options.  It should be
+self-explanatory.
+
+Without command line options
+
+    $ klanar
+	
+browses you latest email and checks if there is any new message from
+kleinanzige.de.  Any such message is processed (triggering the
+renewal) and set aside.  That is, depending on your configuration, it
+is marked as "seen" nad/or moved to a different mail folder.
 
 Sample output:
 
