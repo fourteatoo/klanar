@@ -64,6 +64,16 @@ INFO [2026-01-13 18:10:50,483] main - fourteatoo.klanar.core processing 1 messag
 INFO [2026-01-13 18:10:50,488] main - fourteatoo.klanar.core ad “sports shirt” is expiring (https://www.kleinanzeigen.de/s-anzeige/lego-set/28365763296-22-65234?utm_source=email&utm_medium=system_email&utm_campaign=email-ExtendAd&utm_content=VIP)
 ```
 
+### Monitor mode
+
+klanar can run in monitor mode, if the options `-m` is passed on the
+command line.  In monitor mode, klanar waits for changes in your
+mailbox and if new messages come in, they are parsed and processed as
+necessary.
+
+    $ klanar -m
+
+
 ## Options
 
   -c, --config FILE     configuration file
