@@ -79,10 +79,14 @@ something like this:
 ```
 
 The default mailbox is INBOX.  If you want to change that, you can add
-the `:folder` in the `:imap` map:
+the `:folder` in the `:imap` map. Example:
 
-```
- :imap {:folder "mymailbox"}
+```clojure
+ :imap {:user "your-account@gmail.com"
+        :password "*****"
+        :session {"mail.imaps.host" "imap.gmail.com"
+                  "mail.imaps.port" 993}
+	:folder "mymailbox"}
 ```
 
 If the default logging on the console doesn't suit you, you can add
