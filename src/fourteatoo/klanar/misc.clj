@@ -2,7 +2,8 @@
   (:require
    [fourteatoo.klanar.log :as log]
    [diehard.core :as dh]
-   [clojure.string :as s]))
+   [clojure.string :as s]
+   [mount.core :as mount]))
 
 
 (def exit? (promise))
@@ -18,7 +19,7 @@
                     (Thread. (fn []
                                (log/info "Shutting down")
                                (println "Exiting...")
-                               (deliver exit? true)))))
+                               (mount/stop)))))
 
 (dh/defretrypolicy retry-policy
   {:max-retries 10
