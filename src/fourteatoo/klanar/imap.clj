@@ -6,6 +6,7 @@
    [java-time.api :as time])
   (:import
    [jakarta.mail Flags Flags$Flag Folder Message Message$RecipientType Session]
+   [jakarta.mail.event MessageCountListener MessageCountEvent]
    [jakarta.mail.search AndTerm ComparisonTerm FlagTerm FromStringTerm ReceivedDateTerm RecipientStringTerm SubjectTerm]
    [java.io File FileOutputStream]
    [java.util Calendar Properties]))
@@ -70,6 +71,9 @@
   (doto (as-folder store folder)
     (.open mode)))
 
+(defn folder-open? [folder]
+  (.isOpen folder))
+
 (defn- build-search-term
   [{:keys [days from to subject unread]
     :or   {days 2 unread true}}]
@@ -118,6 +122,18 @@
 
 (defn messages-move [in-folder messages out-folder]
   (.moveMessages in-folder (into-array Message messages) out-folder))
+
+(defn add-message-count-listener [folder & {:keys [added deleted]
+                                            :or {added identity deleted identity}}]
+  (.addMessageCountListener folder
+                            (reify MessageCountListener
+                              (messagesAdded [_ e]
+                                (added e))
+                              (messagesRemoved [_ e]
+                                (deleted e)))))
+
+(defn event-messages [e]
+  (.getMessages e))
 
 (mount/defstate session
   :start (make-imap-session (conf :imap :session)))
