@@ -117,6 +117,32 @@ the `:folder` in the `:imap` map. Example:
         :folder "mymailbox"}
 ```
 
+The `:after-processing` part specifies what to do with the messages
+(only the relevant ones) after klanar is done with them.  By default
+klanar will mark them as "seen" and leave them where it found them.
+If, for instance, you prefer to drop them "unopened" in a differend
+folder, say, "renews", you can place following in you configuration:
+
+```clojure
+ :after-processing {:mark-as-seen false
+                    :move-to "renews"}
+```
+
+If the folder doesn't exist, it is automatically created for you.
+
+klanar doesn't touch the messages that don't match the search
+parameters.  It's up to you to make sure that those are correct and
+sufficient.  Search parameters can specify the sender (`:from`), the
+receiver (`:to`), the period (`:days`), the subject (`:subject`) and
+even messages that have been already seen (`:unread false`).  The
+choice is up to you.
+
+```clojure
+ :search {:from "noreply@kleinanzeigen.de"
+          :to "you@domain.com"
+          :days 14}
+```
+
 If the default logging on the console doesn't suit you, you can add
 something like:
 
