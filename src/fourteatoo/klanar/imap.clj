@@ -120,14 +120,15 @@
 (defn messages-move [in-folder messages out-folder]
   (.moveMessages in-folder (into-array Message messages) out-folder))
 
-(defn add-message-count-listener [folder & {:keys [added deleted]
-                                            :or {added identity deleted identity}}]
+(defn add-message-count-listener [folder & {:keys [added removed]
+                                            :or {added identity
+                                                 removed identity}}]
   (.addMessageCountListener folder
                             (reify MessageCountListener
                               (messagesAdded [_ e]
                                 (added e))
                               (messagesRemoved [_ e]
-                                (deleted e)))))
+                                (removed e)))))
 
 (defn event-messages [e]
   (.getMessages e))
