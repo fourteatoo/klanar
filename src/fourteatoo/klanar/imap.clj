@@ -1,16 +1,13 @@
 (ns fourteatoo.klanar.imap
   (:require
-   [fourteatoo.klanar.conf :as c :refer [conf]]
-   [mount.core :as mount]
    [clojure.java.io :as io]
-   [java-time.api :as time])
+   [fourteatoo.klanar.conf :as c :refer [conf]]
+   [mount.core :as mount])
   (:import
-   [jakarta.mail Flags Flags$Flag Folder Message Message$RecipientType Session]
-   [jakarta.mail.event MessageCountListener MessageCountEvent]
-   [jakarta.mail.search AndTerm ComparisonTerm FlagTerm FromStringTerm ReceivedDateTerm RecipientStringTerm SubjectTerm]
-   [java.io File FileOutputStream]
-   [java.util Calendar Properties]))
-
+   (jakarta.mail Flags Flags$Flag Folder Message Message$RecipientType Session)
+   (jakarta.mail.event MessageCountListener)
+   (jakarta.mail.search AndTerm ComparisonTerm FlagTerm FromStringTerm ReceivedDateTerm RecipientStringTerm SubjectTerm)
+   (java.util Calendar Properties)))
 
 (defn days-ago [n]
   (let [cal (Calendar/getInstance)]
