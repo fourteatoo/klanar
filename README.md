@@ -1,5 +1,3 @@
-[![Clojars Project](https://img.shields.io/clojars/v/io.github.fourteatoo/klanar.svg?include_prereleases)](https://clojars.org/io.github.fourteatoo/klanar)
-[![cljdoc badge](https://cljdoc.org/badge/io.github.fourteatoo/klanar)](https://cljdoc.org/d/io.github.fourteatoo/klanar)
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/fourteatoo/klanar/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/fourteatoo/klanar/tree/main)
 [![Coverage Status](https://coveralls.io/repos/github/fourteatoo/klanar/badge.svg)](https://coveralls.io/github/fourteatoo/klanar)
 
