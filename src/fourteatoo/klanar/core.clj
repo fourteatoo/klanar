@@ -25,15 +25,19 @@
        filter-renewals))
 
 (defn- messages-move [inbox messages outbox]
-  (log/debug "moving" (count messages) "messages from" inbox "to" outbox)
+  (log/debug "moving" (count messages) "messages from"
+             (imap/folder-full-name inbox) "to"
+             (imap/folder-full-name outbox))
   (imap/messages-move inbox (map :message messages) outbox))
 
 (defn- messages-delete [inbox messages]
-  (log/debug "deleting" (count messages) "messages from" inbox)
+  (log/debug "deleting" (count messages) "messages from"
+             (imap/folder-full-name inbox))
   (imap/messages-mark-as-deleted inbox (map :message messages)))
 
 (defn- messages-mark-as-seen [inbox messages]
-  (log/debug "marking as seen" (count messages) "messages from" inbox)
+  (log/debug "marking as seen" (count messages) "messages from"
+             (imap/folder-full-name inbox))
   (imap/messages-mark-as-seen inbox (map :message messages)))
 
 (defn- ensure-folder [folder]
