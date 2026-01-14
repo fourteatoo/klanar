@@ -160,6 +160,9 @@ something like:
            :overrides {"fourteatoo.klanar.imap" :debug}}
 ```
 
+Have a look at https://github.com/pyr/unilog for more information.
+
+
 ### Bugs
 
 Expected.
