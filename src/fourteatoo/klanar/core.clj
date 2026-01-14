@@ -123,35 +123,47 @@
   (run! (comp println imap/folder-full-name)
         (imap/list-folders imap/store)))
 
-(defn- handle-mailbox-event [e inbox]
-  (log/debug "mailbox event" e)
-  (-> (imap/event-messages e)
-      convert-messages
-      filter-renewals
-      (process-batch inbox)))
+(defn- handle-add-event [e]
+  (try
+    (let [messages (imap/event-messages e)
+          mbox (imap/message-folder (first messages))]
+      (log/debug "event: got" (count messages) "adds")
+      (-> messages
+          convert-messages
+          filter-renewals
+          (process-batch mbox)))
+    (catch Exception e
+      (log/error e "error in handle-add-event"))))
+
+(defn- handle-del-event [e]
+  (log/debug "event: got" (count (imap/event-messages e)) "deletes"))
 
 (defn- monitor-mailbox []
   (println "Entering monitor mode.\nType Ctrl-C to exit.")
   (misc/arm-exit-hooks)
-  (dh/with-retry {:retry-on Exception
-                  :delay-ms (* 13 1000)}
-    (with-open [inbox (open-inbox)]
-      (log/info "listening to mailbox" (inbox-name) "events")
-      (imap/add-message-count-listener inbox
-                                       :added handle-mailbox-event)
-      (loop []
-        ;; the listener gets events only when we do something with the
-        ;; API, so we need to check if the mailbox is open once in a
-        ;; while.
-        (Thread/sleep (* (or (conf :poll-period) 3) 1000))
-        (imap/folder-open? inbox)
-        (when-not (misc/exiting?)
-          (recur))))))
+  (with-open [inbox (open-inbox)]
+    (log/info "listening to mailbox" (inbox-name) "events")
+    (imap/add-message-count-listener inbox
+                                     :added handle-add-event
+                                     :removed handle-del-event)
+    (loop []
+      ;; the listener gets events only when we do something with the
+      ;; API, so we need to check if the mailbox is open once in a
+      ;; while.
+      (Thread/sleep (* (or (conf :poll-period) 3) 1000))
+      (imap/folder-open? inbox)
+      (recur))))
+
+(comment
+  (mount/start)
+  (monitor-mailbox))
 
 (defn -main [& args]
   (let [{:keys [options summary]} (parse-cli args)]
     (binding [c/options options]
       (mount/start)
+      (log/debug "DEBUGGING")
+      (log/trace "TRACING")
       (cond (:help options)
             (usage summary nil)
             (:list-folders options)
