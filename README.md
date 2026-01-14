@@ -74,6 +74,7 @@ necessary.
 
 ## Options
 
+```
   -c, --config FILE     configuration file
   -n, --dry-run         don't actually renew the ads
   -m, --monitor         enter monitor mode
@@ -81,7 +82,7 @@ necessary.
   -l  --list-folders    list all folders on the server
   -v, --verbose         increase logging verbosity
   -h, --help            display program usage
-
+```
 
 The `-d` option overrides the `[:search :days]` configuration
 parameter.
