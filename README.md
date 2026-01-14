@@ -86,7 +86,7 @@ the `:folder` in the `:imap` map. Example:
         :password "*****"
         :session {"mail.imaps.host" "imap.gmail.com"
                   "mail.imaps.port" 993}
-	:folder "mymailbox"}
+        :folder "mymailbox"}
 ```
 
 If the default logging on the console doesn't suit you, you can add
