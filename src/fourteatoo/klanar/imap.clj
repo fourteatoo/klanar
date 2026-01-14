@@ -108,6 +108,33 @@
 (defn folder-unset-flag [folder messages flag]
   (folder-set-flag folder messages flag false))
 
+(defn message-folder [msg]
+  (.getFolder msg))
+
+(defn message-set-flag
+  ([msg flag]
+   (message-set-flag msg flag true))
+  ([msg flag set?]
+   (.setFlag msg flag set?)))
+
+(defn message-mark-as-seen [msg]
+  (message-set-flag Flags$Flag/SEEN))
+
+(defn message-mark-as-deleted [msg]
+  (message-set-flag Flags$Flag/DELETED))
+
+(defn folder-store [folder]
+  (.getStore folder))
+
+(defn message-store [msg]
+  (folder-store (message-folder msg)))
+
+(defn message-copy [msg dest]
+  (.copyMessages (message-folder msg) (into-array Message [msg]) (as-folder (message-store msg) dest)))
+
+(defn message-move [msg dest]
+  (.moveMessages (message-folder msg) (into-array Message [msg]) (as-folder (message-store msg) dest)))
+
 (defn messages-mark-as-seen [folder messages]
   (folder-set-flag folder messages Flags$Flag/SEEN))
 
