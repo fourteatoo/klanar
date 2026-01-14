@@ -50,10 +50,15 @@ INFO [2026-01-13 18:10:50,488] main - fourteatoo.klanar.core ad â€œsports shirtâ
 
   -c, --config FILE     configuration file
   -n, --dry-run         don't actually renew the ads
+  -m, --monitor         enter monitor mode
+  -d, --days N          fetch last N days
   -l  --list-folders    list all folders on the server
   -v, --verbose         increase logging verbosity
   -h, --help            display program usage
 
+
+The `-d` option overrides the `[:search :days]` configuration
+parameter.
 
 ## Configuration
 
