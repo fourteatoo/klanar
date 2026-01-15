@@ -132,3 +132,12 @@
 
 (defn message-id [msg]
   (.getMessageID msg))
+
+(defn message-subject [msg]
+  (.getSubject msg))
+
+(defn message-sender [msg]
+  (.getSender msg))
+
+(defn message-send-date [msg]
+  (.getSentDate msg))
