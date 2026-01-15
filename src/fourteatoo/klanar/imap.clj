@@ -9,7 +9,8 @@
    (jakarta.mail.search AndTerm ComparisonTerm FlagTerm FromStringTerm ReceivedDateTerm RecipientStringTerm SubjectTerm)
    (java.util Calendar Properties)))
 
-(defn days-ago [n]
+
+(defn- days-ago [n]
   (let [cal (Calendar/getInstance)]
     (.add cal Calendar/DAY_OF_MONTH (- n))
     (.getTime cal)))
