@@ -123,17 +123,25 @@
   (run! (comp println imap/folder-full-name)
         (imap/list-folders imap/store)))
 
-(defn- handle-add-event [e]
+(defn- extract-message-info [msg]
+  {:id (mail/message-id msg)
+   :subject (mail/message-subject msg)
+   :from (mail/message-sender msg)
+   :date (mail/message-send-date msg)})
+
+(defn- handle-add-event [event]
   (try
-    (let [messages (imap/event-messages e)
-          mbox (imap/message-folder (first messages))]
-      (log/debug "event: got" (count messages) "adds")
-      (-> messages
-          convert-messages
-          filter-renewals
-          (process-batch mbox)))
-    (catch Exception e
-      (log/error e "error in handle-add-event"))))
+    (dh/with-retry {:policy misc/retry-policy}
+      (let [messages (imap/event-messages event)
+            mbox (imap/message-folder (first messages))]
+        (log/debug "event: got" (count messages) "adds")
+        (-> messages
+            convert-messages
+            filter-renewals
+            (process-batch mbox))))
+    (catch Exception ex
+      (log/error ex "handle-add-event: some messages may have been left unprocessed")
+      (log/error (ex-cause ex) "failed batch:" (pr-str (map extract-message-info (imap/event-messages event)))))))
 
 (defn- handle-del-event [e]
   (log/debug "event: got" (count (imap/event-messages e)) "deletes"))
