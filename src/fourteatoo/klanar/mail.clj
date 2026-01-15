@@ -130,5 +130,5 @@
         (assoc :renew-link (extract-action-url-from-content hickory-parts))
         (assoc :ad (extract-ad-url-from-content hickory-parts)))))
 
-(defn get-message-id [msg]
+(defn message-id [msg]
   (.getMessageID msg))
