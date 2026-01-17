@@ -141,6 +141,10 @@
    :from (mail/message-sender msg)
    :date (mail/message-send-date msg)})
 
+(dh/defretrypolicy retry-policy
+  {:max-retries 10
+   :backoff-ms [1000 (* 15 1000)]})
+
 ;; NOTE: Monitoring with Jakarta listeners is useless because after a
 ;; while the server will kill the connection and Jakarta is not able
 ;; to reopen it.  We just poll the server.
