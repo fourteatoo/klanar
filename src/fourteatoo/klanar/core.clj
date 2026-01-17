@@ -141,60 +141,17 @@
    :from (mail/message-sender msg)
    :date (mail/message-send-date msg)})
 
-#_(defn- handle-add-event [event]
-  (try
-    (dh/with-retry {:policy misc/retry-policy}
-      (let [messages (imap/event-messages event)
-            mbox (imap/message-folder (first messages))]
-        (log/debug "event: got" (count messages) "adds")
-        (-> messages
-            convert-messages
-            filter-renewals
-            (process-batch mbox))))
-    (catch Exception ex
-      (log/error ex "handle-add-event: some messages may have been left unprocessed")
-      (log/error (ex-cause ex) "failed batch:" (pr-str (map extract-message-info (imap/event-messages event)))))))
-
-#_(defn- handle-del-event [e]
-  (log/debug "event: got" (count (imap/event-messages e)) "deletes"))
-
-#_(defn- add-listeners [inbox]
-  (log/debug "adding count listeners to" inbox)
-  (imap/add-message-count-listener inbox
-                                   :added handle-add-event
-                                   :removed handle-del-event)
-  inbox)
-
-
 ;; NOTE: Monitoring with Jakarta listeners is useless because after a
 ;; while the server will kill the connection and Jakarta is not able
-;; to reopen it.
+;; to reopen it.  We just poll the server.
 (defn monitor-mailbox []
   (process-last-period {:days 1})
   (loop []
-    (Thread/sleep (* 5 60 1000))
+    (Thread/sleep (* (or (conf :poll-period)
+                         (* 5 60))
+                     1000))
     (process-last-period {:days 1})
     (recur)))
-
-#_(defn- monitor-mailbox []
-  (println "Entering monitor mode.\nType Ctrl-C to exit.")
-  (misc/arm-exit-hooks)
-  (with-open [inbox (open-inbox)]
-    (log/info "listening to mailbox" (inbox-name) "events")
-    (add-listeners inbox)
-    ;; Jakarta is brittle, so we need to implement some workarounds.
-    (loop []
-      ;; the listener gets events only when we do something with the
-      ;; API, so we need to check if the mailbox is open once in a
-      ;; while.
-      (Thread/sleep (* (or (conf :poll-period) 1) 1000))
-      ;; Gmail silently closes the connections and Jakarta doesn't
-      ;; cope with that.
-      (when-not (imap/folder-open? inbox)
-        (log/warn "inbox was closed; reopening")
-        (-> (imap/open-folder inbox)
-            add-listeners))
-      (recur))))
 
 (comment
   (mount/start)
