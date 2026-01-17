@@ -21,9 +21,5 @@
                                (println "Exiting...")
                                (mount/stop)))))
 
-(dh/defretrypolicy retry-policy
-  {:max-retries 10
-   :backoff-ms [(* 3 1000) (* 60 1000)]})
-
 (defn expand-home-dir [s]
   (s/replace-first s #"^~/" (str (System/getProperty "user.home") "/")))
