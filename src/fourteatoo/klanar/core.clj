@@ -40,8 +40,15 @@
              (imap/folder-full-name inbox))
   (imap/messages-mark-as-seen inbox (map :message messages)))
 
+(def ^:dynamic *imap-store*)
+
+(defmacro with-store [store-value & body]
+  `(with-open [store# ~store-value]
+     (binding [*imap-store* store#]
+       ~@body)))
+
 (defn- ensure-folder [folder]
-  (let [folder (imap/as-folder imap/store folder)]
+  (let [folder (imap/as-folder *imap-store* folder)]
     (when-not (imap/folder-exists? folder)
       (imap/folder-create folder))
     folder))
@@ -51,7 +58,7 @@
       "INBOX"))
 
 (defn- open-inbox []
-  (imap/open-folder imap/store (inbox-name)))
+  (imap/open-folder *imap-store* (inbox-name)))
 
 (defn- dispose-of-processed-messages [inbox messages]
   (when-not (opt :dry-run)
@@ -76,11 +83,15 @@
       (http/extend-ad (:renew-link msg))))
   (dispose-of-processed-messages inbox messages))
 
+(defn- connect-store []
+  (imap/connect-store imap/session (conf :imap :user) (conf :imap :password)))
+
 (defn- process-last-period [& [search]]
   (log/info "process messages" (str search))
-  (with-open [inbox (open-inbox)]
-    (let [messages (search-renew-messages inbox search)]
-      (process-batch messages inbox))))
+  (with-store (connect-store)
+    (with-open [inbox (open-inbox)]
+      (let [messages (search-renew-messages inbox search)]
+        (process-batch messages inbox)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -120,8 +131,9 @@
   (process-last-period {:days (or (opt :days) 7)}))
 
 (defn- list-folders []
-  (run! (comp println imap/folder-full-name)
-        (imap/list-folders imap/store)))
+  (with-store (connect-store)
+    (run! (comp println imap/folder-full-name)
+          (imap/list-folders *imap-store*))))
 
 (defn- extract-message-info [msg]
   {:id (mail/message-id msg)
@@ -129,7 +141,7 @@
    :from (mail/message-sender msg)
    :date (mail/message-send-date msg)})
 
-(defn- handle-add-event [event]
+#_(defn- handle-add-event [event]
   (try
     (dh/with-retry {:policy misc/retry-policy}
       (let [messages (imap/event-messages event)
@@ -143,23 +155,45 @@
       (log/error ex "handle-add-event: some messages may have been left unprocessed")
       (log/error (ex-cause ex) "failed batch:" (pr-str (map extract-message-info (imap/event-messages event)))))))
 
-(defn- handle-del-event [e]
+#_(defn- handle-del-event [e]
   (log/debug "event: got" (count (imap/event-messages e)) "deletes"))
 
-(defn- monitor-mailbox []
+#_(defn- add-listeners [inbox]
+  (log/debug "adding count listeners to" inbox)
+  (imap/add-message-count-listener inbox
+                                   :added handle-add-event
+                                   :removed handle-del-event)
+  inbox)
+
+
+;; NOTE: Monitoring with Jakarta listeners is useless because after a
+;; while the server will kill the connection and Jakarta is not able
+;; to reopen it.
+(defn monitor-mailbox []
+  (process-last-period {:days 1})
+  (loop []
+    (Thread/sleep (* 5 60 1000))
+    (process-last-period {:days 1})
+    (recur)))
+
+#_(defn- monitor-mailbox []
   (println "Entering monitor mode.\nType Ctrl-C to exit.")
   (misc/arm-exit-hooks)
   (with-open [inbox (open-inbox)]
     (log/info "listening to mailbox" (inbox-name) "events")
-    (imap/add-message-count-listener inbox
-                                     :added handle-add-event
-                                     :removed handle-del-event)
+    (add-listeners inbox)
+    ;; Jakarta is brittle, so we need to implement some workarounds.
     (loop []
       ;; the listener gets events only when we do something with the
       ;; API, so we need to check if the mailbox is open once in a
       ;; while.
-      (Thread/sleep (* (or (conf :poll-period) 3) 1000))
-      (imap/folder-open? inbox)
+      (Thread/sleep (* (or (conf :poll-period) 1) 1000))
+      ;; Gmail silently closes the connections and Jakarta doesn't
+      ;; cope with that.
+      (when-not (imap/folder-open? inbox)
+        (log/warn "inbox was closed; reopening")
+        (-> (imap/open-folder inbox)
+            add-listeners))
       (recur))))
 
 (comment

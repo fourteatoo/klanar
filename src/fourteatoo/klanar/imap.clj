@@ -164,10 +164,6 @@
 (mount/defstate session
   :start (make-imap-session (conf :imap :session)))
 
-(mount/defstate store
-  :start (connect-store session (conf :imap :user) (conf :imap :password))
-  :stop (.close store))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn save-message [msg file]
