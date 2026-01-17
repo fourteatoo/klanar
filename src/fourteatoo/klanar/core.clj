@@ -154,7 +154,10 @@
     (Thread/sleep (* (or (conf :poll-period)
                          (* 5 60))
                      1000))
-    (process-last-period {:days 1})
+    (dh/with-retry {:policy retry-policy
+                    :on-failed-attempt (fn [_ ex]
+                                         (log/warn ex "failed attempt"))}
+      (process-last-period {:days 1}))
     (recur)))
 
 (comment
