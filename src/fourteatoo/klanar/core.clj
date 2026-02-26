@@ -159,7 +159,9 @@
                      1000))
     (dh/with-retry {:policy retry-policy
                     :on-failed-attempt (fn [_ ex]
-                                         (log/warn ex "failed attempt"))}
+                                         (log/warn "failed attempt:" (str ex)))
+                    :on-failure (fn [_ ex]
+                                  (log/error ex "giving up"))}
       (process-last-period {:days 1}))
     (recur)))
 
