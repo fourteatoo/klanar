@@ -149,9 +149,10 @@
 
 ;; NOTE: Monitoring with Jakarta listeners is useless because after a
 ;; while the server will kill the connection and Jakarta is not able
-;; to reopen it.  We just poll the server.
+;; to reopen it.  We just poll the server, instead.
 (defn monitor-mailbox []
   (process-last-period {:days 1})
+  (println "Monitoring mbox; press Ctrl-C to exit")
   (loop []
     (Thread/sleep (* (or (conf :poll-period)
                          (* 5 60))
