@@ -81,7 +81,8 @@
               (str "(" (get-in msg [:ad :href]) ")"))
     (when-not (opt :dry-run)
       (http/extend-ad (:renew-link msg))))
-  (dispose-of-processed-messages inbox messages))
+  (when-not (opt :dry-run)
+    (dispose-of-processed-messages inbox messages)))
 
 (defn- connect-store []
   (imap/connect-store imap/session (conf :imap :user) (conf :imap :password)))
