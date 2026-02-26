@@ -76,7 +76,8 @@
 (defn- process-batch [messages inbox]
   (log/info "processing" (count messages) "messages")
   (doseq [msg messages]
-    (log/debug "msg:" (mail/message-id (:message msg)))
+    (log/debug "msg:" (pr-str msg))
+    (log/info "msg:" (mail/message-id (:message msg)))
     (log/info "ad" (get-in msg [:ad :title]) "is expiring"
               (str "(" (get-in msg [:ad :href]) ")"))
     (when-not (opt :dry-run)
