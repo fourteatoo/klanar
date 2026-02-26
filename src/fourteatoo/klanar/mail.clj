@@ -94,7 +94,7 @@
 
 (defn select-ad-link [html]
   (hsel/select (hsel/descendant (hsel/tag :td)
-                                (hsel/find-in-text #"Deine Anzeige +“")
+                                (hsel/find-in-text #"Deine Anzeige +")
                                 (hsel/tag :a))
                html))
 
