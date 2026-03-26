@@ -13,7 +13,7 @@
                  [diehard "0.12.0"]
                  [clojure.java-time "1.4.3"]
                  [cprop "0.1.19"]
-                 [clj-http "3.13.1"]
+                 [hato "1.0.0"]
                  [camel-snake-kebab "0.4.3"]
                  [nrepl "1.5.1"]
                  [mount "0.1.23"]]

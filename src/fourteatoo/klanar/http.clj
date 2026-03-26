@@ -1,5 +1,5 @@
 (ns fourteatoo.klanar.http
-  (:require [clj-http.client :as http]
+  (:require [hato.client :as http]
             [hickory.select :as hsel]
             [hickory.core :as html]
             [fourteatoo.klanar.log :as log]
@@ -14,11 +14,10 @@
 
 (defn extend-ad [url]
   (log/debug "pinging URL " url)
-  (->> (http/get url {:cookie-policy :standard})
+  (->> (http/get url)
        :body
        html/parse
        html/as-hickory
        select-result-text
        (mapcat :content)
        s/join))
-
