@@ -153,6 +153,7 @@
 (defn monitor-mailbox []
   (process-last-period {:days 1})
   (println "Monitoring mbox; press Ctrl-C to exit")
+  (log/info "Starting monitor")
   (loop []
     (Thread/sleep (* (or (conf :poll-period)
                          (* 5 60))
@@ -164,10 +165,6 @@
                                   (log/error ex "giving up"))}
       (process-last-period {:days 1}))
     (recur)))
-
-(comment
-  (mount/start)
-  (monitor-mailbox))
 
 (defn -main [& args]
   (let [{:keys [options summary]} (parse-cli args)]
