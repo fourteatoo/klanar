@@ -19,6 +19,7 @@
                  [mount "0.1.23"]]
   :main ^:skip-aot fourteatoo.klanar.core
   :target-path "target/%s"
+  :deploy-repositories ^:replace [["releases" :no-op] ["snapshots" :no-op]]
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
              :dev {:plugins [[lein-codox "0.10.8"]
