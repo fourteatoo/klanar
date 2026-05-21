@@ -1,4 +1,4 @@
-(defproject io.github.fourteatoo/klanar "0.1.0"
+(defproject io.github.fourteatoo/klanar "0.1.1-SNAPSHOT"
   :description "KLeinANzeige Automatic Renew"
   :url "http://example.com/FIXME"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
@@ -20,6 +20,14 @@
   :main ^:skip-aot fourteatoo.klanar.core
   :target-path "target/%s"
   :deploy-repositories ^:replace [["releases" :no-op] ["snapshots" :no-op]]
+  :release-tasks ^:replace [["vcs" "assert-committed"]
+                            ["change" "version" "leiningen.release/bump-version" "release"]
+                            ["vcs" "commit"]
+                            ["vcs" "tag" "v" "--no-sign"]
+                            ;; ["deploy"]
+                            ["change" "version" "leiningen.release/bump-version"]
+                            ["vcs" "commit"]
+                            ["vcs" "push"]]
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
              :dev {:plugins [[lein-codox "0.10.8"]
